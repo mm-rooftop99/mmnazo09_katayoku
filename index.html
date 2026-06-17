@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>片翼【mmの謎解き#9】</title>
+  <style>
+    :root {
+      --bg: #f7f3f5;
+      --text: #2f2930;
+      --muted: #777077;
+      --main: #c76f93;
+      --main-dark: #9f4f71;
+      --line: #e4d8df;
+      --chip: #f2dce7;
+      --favorite-bg: #fff1a8;
+      --favorite-line: #e6c84f;
+      --favorite-text: #6f5600;
+      --shadow: 0 10px 30px rgba(70, 40, 55, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(199, 111, 147, 0.16), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(159, 79, 113, 0.12), transparent 34%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .page {
+      width: min(1080px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 24px 0 56px;
+    }
+
+    header {
+      margin-bottom: 18px;
+    }
+
+    .title-area {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .site-label {
+      display: inline-block;
+      padding: 6px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--main-dark);
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+    }
+
+    .hidden-filter-button {
+      border: none;
+      padding: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      font-weight: inherit;
+      letter-spacing: inherit;
+      text-decoration: none;
+      cursor: pointer;
+      border-radius: 0;
+    }
+
+    .hidden-filter-button:hover {
+      transform: none;
+      opacity: 1;
+    }
+
+    .hidden-filter-button.is-active {
+      padding: 6px 14px;
+      border: 1px solid var(--main);
+      border-radius: 999px;
+      background: var(--chip);
+      color: var(--main-dark);
+      font-weight: 700;
+    }
+
+    .site-label .hidden-filter-button.is-active {
+      margin: -6px -14px;
+      letter-spacing: 0.08em;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(28px, 5.4vw, 48px);
+      line-height: 1.1;
+      letter-spacing: 0.04em;
+    }
+
+    .meta-info {
+      display: grid;
+      gap: 4px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .meta-filter-button {
+      display: inline;
+      border: none;
+      padding: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      font-weight: inherit;
+      text-decoration: none;
+      cursor: pointer;
+      border-radius: 0;
+    }
+
+    .meta-filter-button:hover {
+      transform: none;
+      opacity: 1;
+    }
+
+    .meta-filter-button.is-active {
+      display: inline-block;
+      padding: 2px 8px;
+      border: 1px solid var(--main);
+      border-radius: 999px;
+      background: var(--chip);
+      color: var(--main-dark);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .intro-hidden-filter-button {
+      display: inline;
+      border: none;
+      padding: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      font-weight: inherit;
+      text-decoration: none;
+      cursor: pointer;
+      border-radius: 0;
+    }
+
+    .intro-hidden-filter-button:hover {
+      transform: none;
+      opacity: 1;
+    }
+
+    .intro-hidden-filter-button.is-active {
+      display: inline-block;
+      padding: 2px 8px;
+      border: 1px solid var(--favorite-line);
+      border-radius: 999px;
+      background: var(--favorite-bg);
+      color: var(--favorite-text);
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .lead {
+      margin: 20px 0 12px;
+      color: var(--text);
+      line-height: 1.8;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .answer-panel {
+      display: none;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    body.mode-form .answer-panel {
+      display: block;
+    }
+
+    .answer-form {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .answer-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      color: var(--text);
+      font: inherit;
+      font-weight: 700;
+    }
+
+    .answer-input:focus {
+      outline: 3px solid rgba(199, 111, 147, 0.18);
+    }
+
+    .answer-button {
+      background: var(--main);
+      color: #fff;
+      min-width: 96px;
+    }
+
+    .answer-message {
+      min-height: 1.6em;
+      margin: 10px 0 0;
+      color: var(--main-dark);
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.6;
+    }
+
+    body.mode-form * {
+      border: none !important;
+    }
+
+    .search-panel {
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    .search-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .search-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .field {
+      min-width: 0;
+    }
+
+    .field-label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .option-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .option {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .option input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .option span {
+      display: inline-block;
+      padding: 8px 11px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--text);
+      font-size: 13px;
+      transition: 0.16s ease;
+      white-space: nowrap;
+    }
+
+    .option input:checked + span {
+      border-color: var(--main);
+      background: var(--chip);
+      color: var(--main-dark);
+      font-weight: 700;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 16px;
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.12s ease, opacity 0.12s ease;
+      font-family: inherit;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(0);
+      opacity: 0.86;
+    }
+
+    .search-button {
+      background: var(--main);
+      color: #fff;
+      min-width: 96px;
+    }
+
+    .reset-button {
+      background: #f0e8ec;
+      color: var(--main-dark);
+      min-width: 96px;
+    }
+
+    .result-area {
+      padding: 20px;
+    }
+
+    .result-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 14px;
+    }
+
+    .result-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      min-width: 0;
+    }
+
+    .result-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .result-count {
+      color: var(--muted);
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .active-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .active-filter-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 4px 9px;
+      border: 1px solid var(--favorite-line);
+      border-radius: 999px;
+      background: var(--favorite-bg);
+      color: var(--favorite-text);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .active-filter-remove {
+      border: none;
+      background: transparent;
+      color: inherit;
+      padding: 0;
+      border-radius: 0;
+      font-size: 14px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .active-filter-remove:hover {
+      transform: none;
+      opacity: 0.7;
+    }
+
+    .data-source {
+      margin-bottom: 14px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #f8eef3;
+      color: var(--main-dark);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .article-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .article {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+      padding: 16px;
+    }
+
+    .article.is-favorite {
+      border-color: var(--favorite-line);
+      background: linear-gradient(90deg, rgba(255, 241, 168, 0.55), #fff 42%);
+      box-shadow: 0 8px 22px rgba(111, 86, 0, 0.08);
+    }
+
+    .article-title {
+      margin: 0 0 8px;
+      font-size: 18px;
+      line-height: 1.45;
+    }
+
+    .article-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-weight: 700;
+      background: var(--chip);
+      color: var(--main-dark);
+    }
+
+    .favorite-badge {
+      display: inline-block;
+      padding: 2px 9px;
+      border: 1px solid var(--favorite-line);
+      border-radius: 999px;
+      background: var(--favorite-bg);
+      color: var(--favorite-text);
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .favorite-badge.is-active {
+      box-shadow: 0 0 0 3px rgba(230, 200, 79, 0.25);
+    }
+
+    .article-main {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .article-body {
+      flex: 1;
+      min-width: 0;
+      margin: 0;
+      color: #514b51;
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .empty {
+      padding: 28px 16px;
+      text-align: center;
+      color: var(--muted);
+      border: 1px dashed var(--line);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    .intro-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(47, 41, 48, 0.42);
+      backdrop-filter: blur(4px);
+    }
+
+    .intro-overlay.is-hidden {
+      display: none;
+    }
+
+    .intro-modal {
+      position: relative;
+      width: min(660px, 100%);
+      padding: 34px 32px 28px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at top left, rgba(199, 111, 147, 0.14), transparent 35%),
+        #fff;
+      box-shadow: 0 22px 60px rgba(47, 41, 48, 0.24);
+    }
+
+    .intro-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      padding: 0;
+      border-radius: 999px;
+      background: #f0e8ec;
+      color: var(--main-dark);
+      font-size: 20px;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .intro-title {
+      margin: 0 0 16px;
+      padding-right: 36px;
+      color: var(--text);
+      font-size: clamp(22px, 5vw, 30px);
+      line-height: 1.35;
+      letter-spacing: 0.03em;
+    }
+
+    .intro-text {
+      margin: 0;
+      color: var(--text);
+      font-size: 15px;
+      line-height: 2;
+      font-weight: 600;
+    }
+
+    .intro-start {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    footer {
+      margin-top: 24px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 820px) {
+      .search-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .search-panel,
+      .result-area {
+        padding: 14px;
+        border-radius: 16px;
+      }
+
+      .actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .search-button,
+      .reset-button {
+        width: 100%;
+        min-width: 0;
+      }
+
+      .answer-form {
+        grid-template-columns: 1fr;
+      }
+
+      .answer-button {
+        width: 100%;
+      }
+
+      .result-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .result-count {
+        white-space: normal;
+      }
+
+      .article {
+        padding: 13px;
+      }
+
+      .article-title {
+        font-size: 16px;
+      }
+
+      .article-main {
+        align-items: center;
+        gap: 8px;
+      }
+
+      .article-body {
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .intro-modal {
+        padding: 28px 22px 22px;
+        border-radius: 18px;
+      }
+
+      .intro-text {
+        font-size: 14px;
+        line-height: 1.9;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="intro-overlay" id="introOverlay">
+    <section class="intro-modal" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+      <button type="button" class="intro-close" id="introCloseButton" aria-label="閉じる">×</button>
+      <h2 class="intro-title" id="introTitle">片翼【mmの謎解き#9】</h2>
+      <p class="intro-text">
+        この謎解きの成功条件は、<br>
+        クリアページに到達することです。<br>
+        ソースコードの閲覧は禁止です。<br>
+        この謎解きが、あなたの<button type="button" class="intro-hidden-filter-button" id="introFavoriteButton">お気に入り</button>の謎解きになることを願っております。
+      </p>
+      <p class="intro-start">右上の×を押して、始めましょう。</p>
+    </section>
+  </div>
+
+  <main class="page">
+    <header>
+      <div class="title-area">
+        <div class="site-label">
+          <button type="button" class="hidden-filter-button" id="nazoMetaButton">謎解き</button>
+        </div>
+        <h1>片翼【mmの謎解き#9】</h1>
+        <div class="meta-info">
+          <div>想定クリア時間：90min</div>
+          <div>
+            <button type="button" class="meta-filter-button" id="publicMetaButton">公開</button>：2026年6月17日
+          </div>
+          <div>制作：mm（@mm_syumida）#mmの謎解き</div>
+        </div>
+      </div>
+    </header>
+
+    <p class="lead">記事を検索して、クリアページに到達しよう！</p>
+
+    <section class="card answer-panel" id="answerPanel">
+      <div class="search-header">
+        <h2 class="panel-title">解答フォーム</h2>
+      </div>
+
+      <form class="answer-form" id="answerForm">
+        <div class="field">
+          <label class="field-label" for="answerInput">解答</label>
+          <input class="answer-input" id="answerInput" type="text" autocomplete="off" placeholder="解答を入力" />
+        </div>
+        <button class="answer-button" type="submit">送信</button>
+      </form>
+      <p class="answer-message" id="answerMessage" aria-live="polite"></p>
+    </section>
+
+    <section class="card search-panel">
+      <div class="search-header">
+        <h2 class="panel-title">記事を検索</h2>
+      </div>
+
+      <form id="searchForm">
+        <div class="search-grid">
+          <div class="field">
+            <span class="field-label">タグ</span>
+            <div class="option-list">
+              <label class="option">
+                <input type="radio" name="tag" value="仕事" />
+                <span>仕事</span>
+              </label>
+              <label class="option">
+                <input type="radio" name="tag" value="恋愛" />
+                <span>恋愛</span>
+              </label>
+              <label class="option">
+                <input type="radio" name="tag" value="ゲーム" />
+                <span>ゲーム</span>
+              </label>
+              <label class="option">
+                <input type="radio" name="tag" value="ほか" />
+                <span>ほか</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="field-label">日付</span>
+            <div class="option-list">
+              <label class="option">
+                <input type="radio" name="dateOrder" value="old" checked />
+                <span>古い順</span>
+              </label>
+              <label class="option">
+                <input type="radio" name="dateOrder" value="new" />
+                <span>新しい順</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="field-label">表示件数</span>
+            <div class="option-list">
+              <label class="option">
+                <input type="radio" name="limit" value="5" checked />
+                <span>5件</span>
+              </label>
+              <label class="option">
+                <input type="radio" name="limit" value="10" />
+                <span>10件</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="search-button" type="submit">検索</button>
+          <button class="reset-button" type="button" id="resetButton">リセット</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card result-area">
+      <div class="result-head">
+        <div class="result-left">
+          <h2 class="result-title">検索結果</h2>
+          <div class="active-filters" id="activeFilters"></div>
+        </div>
+        <div class="result-count" id="resultCount">読み込み中...</div>
+      </div>
+
+      <div class="data-source" id="dataSourceMessage"></div>
+
+      <div id="articleList" class="article-list"></div>
+    </section>
+
+    <footer>
+      このブログ・記事はすべて架空のものです。
+    </footer>
+  </main>
+
+  <script>
+    const DATA_URL = "./data.tsv";
+
+    const FALLBACK_TSV = `記事タイトル	日付	タグ	本文	ステータス	ステータス2
+企画書の余白	2026-01-01	仕事	企画書の余白について、いつもと少しだけ違う出来事があった。	非公開	
+朝礼前の深呼吸	2026-01-04	仕事	朝礼前の深呼吸について、いつもと少しだけ違う出来事があった。	非公開	
+古い議事録の印	2026-01-08	仕事	古い議事録の印について、いつもと少しだけ違う出来事があった。	非公開	
+午後の確認メール	2026-01-11	仕事	午後の確認メールについて、いつもと少しだけ違う出来事があった。	非公開	
+会議室の忘れ物	2026-01-15	仕事	会議室の忘れ物について、いつもと少しだけ違う出来事があった。	非公開	
+白板に残った矢印	2026-01-18	仕事	白板に残った矢印について、いつもと少しだけ違う出来事があった。	非公開	
+昼休みの相談	2026-01-22	仕事	昼休みの相談について、いつもと少しだけ違う出来事があった。	非公開	
+定時後の通知音	2026-01-25	仕事	定時後の通知音について、いつもと少しだけ違う出来事があった。	非公開	
+引き継ぎメモ	2026-01-29	仕事	引き継ぎメモについて、いつもと少しだけ違う出来事があった。	非公開	
+封筒のない書類	2026-02-01	仕事	封筒のない書類について、いつもと少しだけ違う出来事があった。	非公開	
+共有前の沈黙	2026-02-05	仕事	共有前の沈黙について、いつもと少しだけ違う出来事があった。	非公開	
+朝一番の電話	2026-02-08	仕事	朝一番の電話について、いつもと少しだけ違う出来事があった。	非公開	
+消えたチェック欄	2026-02-12	仕事	消えたチェック欄について、いつもと少しだけ違う出来事があった。	非公開	
+迷惑料	2026-02-14	仕事	※”フォーム”から解答送信してクリアです。	非公開	お気に入り
+机上の小さな付箋	2026-02-16	仕事	机上の小さな付箋について、いつもと少しだけ違う出来事があった。	非公開	
+退勤前の一文	2026-02-19	仕事	退勤前の一文について、いつもと少しだけ違う出来事があった。	非公開	
+最後の確認者	2026-02-23	仕事	最後の確認者について、いつもと少しだけ違う出来事があった。	非公開	
+月曜のタスク表	2026-02-26	仕事	月曜のタスク表について、いつもと少しだけ違う出来事があった。	非公開	
+会議後の沈黙	2026-03-02	仕事	会議後の沈黙について、いつもと少しだけ違う出来事があった。	非公開	
+仮置きフォルダ	2026-03-05	仕事	仮置きフォルダについて、いつもと少しだけ違う出来事があった。	非公開	
+印刷機の順番待ち	2026-03-09	仕事	印刷機の順番待ちについて、いつもと少しだけ違う出来事があった。	非公開	
+午後三時の差し戻し	2026-03-12	仕事	午後三時の差し戻しについて、いつもと少しだけ違う出来事があった。	非公開	
+資料名の数字	2026-03-16	仕事	資料名の数字について、いつもと少しだけ違う出来事があった。	非公開	
+空席の内線	2026-03-19	仕事	空席の内線について、いつもと少しだけ違う出来事があった。	非公開	
+金曜の承認待ち	2026-03-23	仕事	金曜の承認待ちについて、いつもと少しだけ違う出来事があった。	非公開	
+仮説の置き場所	2026-03-26	仕事	仮説の置き場所について、いつもと少しだけ違う出来事があった。	非公開	
+共有フォルダの奥	2026-03-30	仕事	共有フォルダの奥について、いつもと少しだけ違う出来事があった。	非公開	
+最終版の朝	2026-04-02	仕事	最終版の朝について、いつもと少しだけ違う出来事があった。	非公開	
+依頼文の温度	2026-04-06	仕事	依頼文の温度について、いつもと少しだけ違う出来事があった。	非公開	
+確認済みの印	2026-04-09	仕事	確認済みの印について、いつもと少しだけ違う出来事があった。	非公開	
+差し替え資料	2026-04-13	仕事	差し替え資料について、いつもと少しだけ違う出来事があった。	非公開	
+朝の未読件数	2026-04-16	仕事	朝の未読件数について、いつもと少しだけ違う出来事があった。	非公開	
+机の上の名刺	2026-04-20	仕事	机の上の名刺について、いつもと少しだけ違う出来事があった。	非公開	
+会議前の沈黙	2026-04-23	仕事	会議前の沈黙について、いつもと少しだけ違う出来事があった。	非公開	
+戻ってきた付箋	2026-04-27	仕事	戻ってきた付箋について、いつもと少しだけ違う出来事があった。	非公開	
+資料棚の奥	2026-04-30	仕事	資料棚の奥について、いつもと少しだけ違う出来事があった。	非公開	
+予定表の空白	2026-05-04	仕事	予定表の空白について、いつもと少しだけ違う出来事があった。	非公開	
+送信前の一拍	2026-05-07	仕事	送信前の一拍について、いつもと少しだけ違う出来事があった。	非公開	
+古い内線番号	2026-05-11	仕事	古い内線番号について、いつもと少しだけ違う出来事があった。	非公開	
+昼下がりの相談	2026-05-14	仕事	昼下がりの相談について、いつもと少しだけ違う出来事があった。	非公開	
+赤字だらけの紙	2026-05-18	仕事	赤字だらけの紙について、いつもと少しだけ違う出来事があった。	非公開	
+見覚えのない署名	2026-05-21	仕事	見覚えのない署名について、いつもと少しだけ違う出来事があった。	非公開	
+終業後の照明	2026-05-25	仕事	終業後の照明について、いつもと少しだけ違う出来事があった。	非公開	
+返信待ちの午後	2026-05-28	仕事	返信待ちの午後について、いつもと少しだけ違う出来事があった。	非公開	
+二枚目の議事録	2026-06-01	仕事	二枚目の議事録について、いつもと少しだけ違う出来事があった。	非公開	
+消えた予定	2026-06-04	仕事	消えた予定について、いつもと少しだけ違う出来事があった。	非公開	
+月末の封筒	2026-06-08	仕事	月末の封筒について、いつもと少しだけ違う出来事があった。	非公開	
+窓際の席	2026-06-11	仕事	窓際の席について、いつもと少しだけ違う出来事があった。	非公開	
+最後の依頼	2026-06-15	仕事	最後の依頼について、いつもと少しだけ違う出来事があった。	非公開	
+朝焼けのオフィス	2026-06-17	仕事	朝焼けのオフィスについて、いつもと少しだけ違う出来事があった。	非公開	
+駅前の待ち合わせ	2026-01-01	恋愛	駅前の待ち合わせのことを、あとから何度も思い返していた。	非公開	
+読まれない既読	2026-01-05	恋愛	読まれない既読のことを、あとから何度も思い返していた。	非公開	
+傘を忘れた日	2026-01-09	恋愛	傘を忘れた日のことを、あとから何度も思い返していた。	非公開	
+二杯目のコーヒー	2026-01-13	恋愛	二杯目のコーヒーのことを、あとから何度も思い返していた。	非公開	
+名前の呼び方	2026-01-17	恋愛	名前の呼び方のことを、あとから何度も思い返していた。	非公開	
+短い返信	2026-01-21	恋愛	短い返信のことを、あとから何度も思い返していた。	非公開	
+夕焼けの横顔	2026-01-25	恋愛	夕焼けの横顔のことを、あとから何度も思い返していた。	非公開	
+同じ曲の通知	2026-01-29	恋愛	同じ曲の通知のことを、あとから何度も思い返していた。	非公開	
+改札前の沈黙	2026-02-02	恋愛	改札前の沈黙のことを、あとから何度も思い返していた。	非公開	
+貸したままの本	2026-02-06	恋愛	貸したままの本のことを、あとから何度も思い返していた。	非公開	
+春先のメッセージ	2026-02-10	恋愛	春先のメッセージのことを、あとから何度も思い返していた。	非公開	
+選ばなかった映画	2026-02-13	恋愛	選ばなかった映画のことを、あとから何度も思い返していた。	非公開	
+夜風のベンチ	2026-02-18	恋愛	夜風のベンチのことを、あとから何度も思い返していた。	非公開	
+消せない下書き	2026-02-22	恋愛	消せない下書きのことを、あとから何度も更新していた。	非公開	
+二人分の切符	2026-02-26	恋愛	二人分の切符のことを、あとから何度も思い返していた。	非公開	
+言いかけた理由	2026-03-02	恋愛	言いかけた理由のことを、あとから何度も思い返していた。	非公開	
+並んだ影	2026-03-06	恋愛	並んだ影のことを、あとから何度も思い返していた。	非公開	
+雨上がりの約束	2026-03-10	恋愛	雨上がりの約束のことを、あとから何度も思い返していた。	非公開	
+なくした片方	2026-03-14	恋愛	なくした片方のことを、あとから何度も思い返していた。	非公開	
+遠回りの帰路	2026-03-18	恋愛	遠回りの帰路のことを、あとから何度も思い返していた。	非公開	
+白い息の記憶	2026-03-22	恋愛	白い息の記憶のことを、あとから何度も思い返していた。	非公開	
+週末の予定	2026-03-26	恋愛	週末の予定のことを、あとから何度も思い返していた。	非公開	
+同じ傘の中	2026-03-30	恋愛	同じ傘の中のことを、あとから何度も思い返していた。	非公開	
+閉店前の会話	2026-04-03	恋愛	閉店前の会話のことを、あとから何度も思い返していた。	非公開	
+最後のスタンプ	2026-04-07	恋愛	最後のスタンプのことを、あとから何度も思い返していた。	非公開	
+遠い花火	2026-04-11	恋愛	遠い花火のことを、あとから何度も思い返していた。	非公開	
+六月の待ち合わせ	2026-04-15	恋愛	六月の待ち合わせのことを、あとから何度も思い返していた。	非公開	
+帰り際の一言	2026-04-19	恋愛	帰り際の一言のことを、あとから何度も思い返していた。	非公開	
+約束のない日	2026-04-23	恋愛	約束のない日のことを、あとから何度も思い返していた。	非公開	
+隣のイヤホン	2026-04-27	恋愛	隣のイヤホンのことを、あとから何度も思い返していた。	非公開	
+小さな既視感	2026-05-01	恋愛	小さな既視感のことを、あとから何度も思い返していた。	非公開	
+手を振る角度	2026-05-05	恋愛	手を振る角度のことを、あとから何度も思い返していた。	非公開	
+二駅分の会話	2026-05-09	恋愛	二駅分の会話のことを、あとから何度も思い返していた。	非公開	
+お気に入りフィルタは便利	2026-05-13	恋愛	2月14日は特別な日。唯一のお気に入りだ。なんといっても彼女の誕生日だ。	非公開	
+改札の向こう	2026-05-17	恋愛	改札の向こうのことを、あとから何度も思い返していた。	非公開	
+言えない名前	2026-05-21	恋愛	言えない名前のことを、あとから何度も思い返していた。	非公開	
+同じ空の写真	2026-05-25	恋愛	同じ空の写真のことを、あとから何度も思い返していた。	非公開	
+夜の通知	2026-05-29	恋愛	夜の通知のことを、あとから何度も思い返していた。	非公開	
+遅れた返事	2026-06-01	恋愛	遅れた返事のことを、あとから何度も思い返していた。	非公開	
+二度目の春	2026-06-05	恋愛	二度目の春のことを、あとから何度も思い返していた。	非公開	
+折りたたみ傘	2026-06-09	恋愛	折りたたみ傘のことを、あとから何度も思い返していた。	非公開	
+青い封筒	2026-06-13	恋愛	青い封筒のことを、あとから何度も思い返していた。	非公開	
+最後の横顔	2026-06-17	恋愛	最後の横顔のことを、あとから何度も思い返していた。	非公開	
+チュートリアルの外	2026-01-01	ゲーム	チュートリアルの外で、画面の端に小さな違和感が残っていた。	非公開	
+セーブ地点の手前	2026-01-04	ゲーム	セーブ地点の手前で、画面の端に小さな違和感が残っていた。	非公開	
+赤い宝箱	2026-01-06	ゲーム	赤い宝箱で、画面の端に小さな違和感が残っていた。	非公開	
+一周目の違和感	2026-01-09	ゲーム	一周目の違和感で、画面の端に小さな違和感が残っていた。	非公開	
+選択肢の端	2026-01-12	ゲーム	選択肢の端で、画面の端に小さな違和感が残っていた。	非公開	
+夜ステージの音	2026-01-14	ゲーム	夜ステージの音で、画面の端に小さな違和感が残っていた。	非公開	
+残機ゼロの画面	2026-01-17	ゲーム	残機ゼロの画面で、画面の端に小さな違和感が残っていた。	非公開	
+隠し部屋の入口	2026-01-20	ゲーム	隠し部屋の入口で、画面の端に小さな違和感が残っていた。	非公開	
+負けイベントの先	2026-01-22	ゲーム	負けイベントの先で、画面の端に小さな違和感が残っていた。	非公開	
+青いカーソル	2026-01-25	ゲーム	青いカーソルで、画面の端に小さな違和感が残っていた。	非公開	
+図鑑の空白	2026-01-28	ゲーム	図鑑の空白で、画面の端に小さな違和感が残っていた。	非公開	
+対戦後のログ	2026-01-30	ゲーム	対戦後のログで、画面の端に小さな違和感が残っていた。	非公開	
+名前入力の制限	2026-02-02	ゲーム	名前入力の制限で、画面の端に小さな違和感が残っていた。	非公開	
+未読のクエスト	2026-02-04	ゲーム	未読のクエストで、画面の端に小さな違和感が残っていた。	非公開	
+最後のチェックポイント	2026-02-07	ゲーム	最後のチェックポイントで、画面の端に小さな違和感が残っていた。	非公開	
+透明なアイテム	2026-02-10	ゲーム	透明なアイテムで、画面の端に小さな違和感が残っていた。	非公開	
+協力プレイの合図	2026-02-12	ゲーム	協力プレイの合図で、画面の端に小さな違和感が残っていた。	非公開	
+ランキング外の名前	2026-02-16	ゲーム	ランキング外の名前で、画面の端に小さな違和感が残っていた。	非公開	
+裏面の天気	2026-02-18	ゲーム	裏面の天気で、画面の端に小さな違和感が残っていた。	非公開	
+ロード中の数字	2026-02-21	ゲーム	ロード中の数字で、画面の端に小さな違和感が残っていた。	非公開	
+白いミニマップ	2026-02-24	ゲーム	白いミニマップで、画面の端に小さな違和感が残っていた。	非公開	
+ラスボス前の商人	2026-02-26	ゲーム	ラスボス前の商人で、画面の端に小さな違和感が残っていた。	非公開	
+メニューの奥	2026-03-01	ゲーム	メニューの奥で、画面の端に小さな違和感が残っていた。	非公開	
+勝利画面の影	2026-03-04	ゲーム	勝利画面の影で、画面の端に小さな違和感が残っていた。	非公開	
+二つ目のエンディング	2026-03-06	ゲーム	二つ目のエンディングで、画面の端に小さな違和感が残っていた。	非公開	
+最初の村	2026-03-09	ゲーム	最初の村で、画面の端に小さな違和感が残っていた。	非公開	
+隠された実績	2026-03-12	ゲーム	隠された実績で、画面の端に小さな違和感が残っていた。	非公開	
+古いセーブデータ	2026-03-14	ゲーム	古いセーブデータで、画面の端に小さな違和感が残っていた。	非公開	
+水辺のダンジョン	2026-03-17	ゲーム	水辺のダンジョンで、画面の端に小さな違和感が残っていた。	非公開	
+光るスイッチ	2026-03-20	ゲーム	光るスイッチで、画面の端に小さな違和感が残っていた。	非公開	
+地下通路の壁	2026-03-22	ゲーム	地下通路の壁で、画面の端に小さな違和感が残っていた。	非公開	
+もう一つの鍵	2026-03-25	ゲーム	もう一つの鍵で、画面の端に小さな違和感が残っていた。	非公開	
+壊れたコントローラー	2026-03-28	ゲーム	壊れたコントローラーで、画面の端に小さな違和感が残っていた。	非公開	
+無音のイベント	2026-03-30	ゲーム	無音のイベントで、画面の端に小さな違和感が残っていた。	非公開	
+リザルトの数字	2026-04-02	ゲーム	リザルトの数字で、画面の端に小さな違和感が残っていた。	非公開	
+見えない足場	2026-04-05	ゲーム	見えない足場で、画面の端に小さな違和感が残っていた。	非公開	
+灰色のマップ	2026-04-07	ゲーム	灰色のマップで、画面の端に小さな違和感が残っていた。	非公開	
+戻れない橋	2026-04-10	ゲーム	戻れない橋で、画面の端に小さな違和感が残っていた。	非公開	
+三番目の扉	2026-04-13	ゲーム	三番目の扉で、画面の端に小さな違和感が残っていた。	非公開	
+説明書の余白	2026-04-15	ゲーム	説明書の余白で、画面の端に小さな違和感が残っていた。	非公開	
+スキップできない会話	2026-04-18	ゲーム	スキップできない会話で、画面の端に小さな違和感が残っていた。	非公開	
+空欄のプレイヤー名	2026-04-21	ゲーム	空欄のプレイヤー名で、画面の端に小さな違和感が残っていた。	非公開	
+夜明けのボス戦	2026-04-23	ゲーム	夜明けのボス戦で、画面の端に小さな違和感が残っていた。	非公開	
+拾えないコイン	2026-04-26	ゲーム	拾えないコインで、画面の端に小さな違和感が残っていた。	非公開	
+止まったタイマー	2026-04-29	ゲーム	止まったタイマーで、画面の端に小さな違和感が残っていた。	非公開	
+二周目の町	2026-05-01	ゲーム	二周目の町で、画面の端に小さな違和感が残っていた。	非公開	
+最後のショップ	2026-05-04	ゲーム	最後のショップで、画面の端に小さな違和感が残っていた。	非公開	
+封印された技	2026-05-07	ゲーム	封印された技で、画面の端に小さな違和感が残っていた。	非公開	
+白いロード画面	2026-05-09	ゲーム	白いロード画面で、画面の端に小さな違和感が残っていた。	非公開	
+消えたカーソル	2026-05-12	ゲーム	消えたカーソルで、画面の端に小さな違和感が残っていた。	非公開	
+隠しコマンド	2026-05-15	ゲーム	隠しコマンドで、画面の端に小さな違和感が残っていた。	非公開	
+透明な壁	2026-05-17	ゲーム	透明な壁で、画面の端に小さな違和感が残っていた。	非公開	
+古い攻略本	2026-05-20	ゲーム	古い攻略本で、画面の端に小さな違和感が残っていた。	非公開	
+逆さまの城	2026-05-23	ゲーム	逆さまの城で、画面の端に小さな違和感が残っていた。	非公開	
+青いセーブポイント	2026-05-25	ゲーム	青いセーブポイントで、画面の端に小さな違和感が残っていた。	非公開	
+エラー音の先	2026-05-28	ゲーム	エラー音の先で、画面の端に小さな違和感が残っていた。	非公開	
+分岐しない道	2026-05-31	ゲーム	分岐しない道で、画面の端に小さな違和感が残っていた。	非公開	
+黒いタイトル画面	2026-06-02	ゲーム	黒いタイトル画面で、画面の端に小さな違和感が残っていた。	非公開	
+三つ目の選択肢	2026-06-05	ゲーム	三つ目の選択肢で、画面の端に小さな違和感が残っていた。	非公開	
+未登録のアイコン	2026-06-08	ゲーム	未登録のアイコンで、画面の端に小さな違和感が残っていた。	非公開	
+終わらないクエスト	2026-06-10	ゲーム	終わらないクエストで、画面の端に小さな違和感が残っていた。	非公開	
+初期装備の謎	2026-06-13	ゲーム	初期装備の謎で、画面の端に小さな違和感が残っていた。	非公開	
+空のアイテム欄	2026-06-15	ゲーム	空のアイテム欄で、画面の端に小さな違和感が残っていた。	非公開	
+再起動後の世界	2026-06-17	ゲーム	再起動後の世界で、画面の端に小さな違和感が残っていた。	非公開	
+折れた地図の端	2026-01-01	謎解き	折れた地図の端には、まだ解けていない小さな仕掛けが残っていた。	非公開	
+読めない招待状	2026-01-09	謎解き	読めない招待状には、まだ解けていない小さな仕掛けが残っていた。	非公開	
+消えた一文字	2026-01-17	謎解き	消えた一文字には、まだ解けていない小さな仕掛けが残っていた。	非公開	
+反転した看板	2026-01-25	謎解き	反転した看板には、まだ解けていない小さな仕掛けが残っていた。	非公開	
+青い封筒	2026-02-02	謎解き	青い封筒には、まだ解けていない小さな仕掛けが残っていた。	非公開	
+線のない迷路	2026-02-10	謎解き	線のない迷路には、まだ解けていない小さな仕掛けが残っていた。	非公開	
+丸だけの手紙	2026-02-18	謎解き	丸だけの手紙には、まだ解けていない小さな仕掛けが残っていた。	非公開	
+時計のない部屋	2026-02-26	謎解き	時計のない部屋には、まだ解けていない小さな仕掛けが残っていた。	非公開	
+白紙のメモ	2026-03-06	謎解き	白紙のメモには、まだ解けていない小さな仕掛けが残っていた。	非公開	
+半分の合図	2026-03-14	謎解き	半分の合図には、まだ解けていない小さな仕掛けが残っていた。	非公開	
+片翼制作日記	2026-03-17	謎解き	片翼の答えは2月14日の記事のタイトルにしようかな。	公開	
+裏返しの数字	2026-03-30	謎解き	裏返しの数字には、まだ解けていない小さな仕掛けが残っていた。	非公開	
+余った鍵	2026-04-07	謎解き	余った鍵には、まだ解けていない小さな仕掛けが残っていた。	非公開	
+重なる記号	2026-04-15	謎解き	重なる記号には、まだ解けていない小さな仕掛けが残っていた。	非公開	
+片方の羽根	2026-04-23	謎解き	片方の羽根には、まだ解けていない小さな仕掛けが残っていた。	非公開	
+沈んだ矢印	2026-05-01	謎解き	沈んだ矢印には、まだ解けていない小さな仕掛けが残っていた。	非公開	
+欠けたカレンダー	2026-05-09	謎解き	欠けたカレンダーには、まだ解けていない小さな仕掛けが残っていた。	非公開	
+二番目の入口	2026-05-17	謎解き	二番目の入口には、まだ解けていない小さな仕掛けが残っていた。	非公開	
+再起動の重要性	2026-05-25	謎解き	ゲームに詰まったら、大胆に再起動をすることが重要だ。	非公開	
+最後の並び替え	2026-06-08	謎解き	最後の並び替えには、まだ解けていない小さな仕掛けが残っていた。	非公開	
+翼のない日	2026-06-17	謎解き	翼のない日には、まだ解けていない小さな仕掛けが残っていた。	非公開	
+ご報告	2026-04-10	ほか	プライベートな記事はすべて非公開にしようと思います。	公開	`;
+
+    const state = {
+      articles: [],
+      filteredArticles: [],
+      dataSource: "",
+      statusFilter: "",
+      favoriteFilter: "",
+      pendingTagFilter: ""
+    };
+
+    const searchForm = document.getElementById("searchForm");
+    const resetButton = document.getElementById("resetButton");
+    const articleList = document.getElementById("articleList");
+    const resultCount = document.getElementById("resultCount");
+    const dataSourceMessage = document.getElementById("dataSourceMessage");
+    const publicMetaButton = document.getElementById("publicMetaButton");
+    const nazoMetaButton = document.getElementById("nazoMetaButton");
+    const activeFilters = document.getElementById("activeFilters");
+    const introOverlay = document.getElementById("introOverlay");
+    const introCloseButton = document.getElementById("introCloseButton");
+    const introFavoriteButton = document.getElementById("introFavoriteButton");
+    const answerForm = document.getElementById("answerForm");
+    const answerInput = document.getElementById("answerInput");
+    const answerMessage = document.getElementById("answerMessage");
+
+    document.addEventListener("DOMContentLoaded", init);
+
+    async function init() {
+      setupPageMode();
+      setupIntroModal();
+      setupAnswerForm();
+      setupToggleableRadios();
+      setupPublicMetaFilter();
+      setupNazoMetaSelector();
+      setupIntroFavoriteFilter();
+
+      const loaded = await loadArticles();
+
+      state.articles = loaded.articles;
+      state.dataSource = loaded.source;
+
+      renderDataSourceMessage();
+      applySearch();
+
+      searchForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        applySearch();
+      });
+
+      resetButton.addEventListener("click", () => {
+        searchForm.reset();
+        document.querySelector('input[name="dateOrder"][value="old"]').checked = true;
+        document.querySelector('input[name="limit"][value="5"]').checked = true;
+        state.statusFilter = "";
+        state.favoriteFilter = "";
+        state.pendingTagFilter = "";
+        publicMetaButton.classList.remove("is-active");
+        nazoMetaButton.classList.remove("is-active");
+        introFavoriteButton.classList.remove("is-active");
+        applySearch();
+      });
+    }
+
+    function setupPageMode() {
+      const params = new URLSearchParams(window.location.search);
+      const add = params.get("add");
+
+      document.body.classList.toggle("mode-form", add === "form");
+      document.body.classList.toggle("mode-frame", add === "frame" || !add);
+    }
+
+    function setupAnswerForm() {
+      if (!answerForm) return;
+
+      answerForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        answerMessage.textContent = "解答を受け付けました。";
+        answerInput.blur();
+      });
+    }
+
+    function setupIntroModal() {
+      introCloseButton.addEventListener("click", () => {
+        introOverlay.classList.add("is-hidden");
+      });
+    }
+
+    function setupToggleableRadios() {
+      const radios = document.querySelectorAll('input[type="radio"]');
+
+      radios.forEach((radio) => {
+        radio.addEventListener("pointerdown", () => {
+          radio.dataset.wasChecked = radio.checked ? "true" : "false";
+        });
+
+        radio.addEventListener("click", () => {
+          if (radio.dataset.wasChecked === "true") {
+            radio.checked = false;
+            radio.dataset.wasChecked = "false";
+          }
+
+          if (radio.name === "tag") {
+            if (radio.checked) {
+              state.pendingTagFilter = radio.value;
+              nazoMetaButton.classList.remove("is-active");
+            } else {
+              state.pendingTagFilter = "";
+            }
+          }
+        });
+      });
+    }
+
+    function setupPublicMetaFilter() {
+      publicMetaButton.addEventListener("click", () => {
+        if (state.statusFilter === "公開") {
+          state.statusFilter = "";
+          publicMetaButton.classList.remove("is-active");
+        } else {
+          state.statusFilter = "公開";
+          publicMetaButton.classList.add("is-active");
+        }
+
+        applySearch();
+      });
+    }
+
+    function setupNazoMetaSelector() {
+      nazoMetaButton.addEventListener("click", () => {
+        const tagRadios = document.querySelectorAll('input[name="tag"]');
+
+        if (state.pendingTagFilter === "謎解き") {
+          state.pendingTagFilter = "";
+          nazoMetaButton.classList.remove("is-active");
+        } else {
+          state.pendingTagFilter = "謎解き";
+          nazoMetaButton.classList.add("is-active");
+          tagRadios.forEach((radio) => {
+            radio.checked = false;
+            radio.dataset.wasChecked = "false";
+          });
+        }
+      });
+    }
+
+    function setupIntroFavoriteFilter() {
+      introFavoriteButton.addEventListener("click", () => {
+        if (state.favoriteFilter === "お気に入り") {
+          state.favoriteFilter = "";
+          introFavoriteButton.classList.remove("is-active");
+        } else {
+          state.favoriteFilter = "お気に入り";
+          state.statusFilter = "";
+          state.pendingTagFilter = "";
+
+          introFavoriteButton.classList.add("is-active");
+          publicMetaButton.classList.remove("is-active");
+          nazoMetaButton.classList.remove("is-active");
+
+          document.querySelectorAll('input[name="tag"]').forEach((radio) => {
+            radio.checked = false;
+            radio.dataset.wasChecked = "false";
+          });
+        }
+
+        applySearch();
+      });
+    }
+
+    async function loadArticles() {
+      try {
+        const response = await fetch(DATA_URL, { cache: "no-store" });
+
+        if (!response.ok) {
+          throw new Error("data.tsvの読み込みに失敗しました。");
+        }
+
+        const text = await response.text();
+
+        return {
+          articles: parseTsv(text),
+          source: "external"
+        };
+      } catch (error) {
+        console.warn("data.tsvを読み込めなかったため、内蔵サンプルデータを使用します。", error);
+
+        return {
+          articles: parseTsv(FALLBACK_TSV),
+          source: "fallback"
+        };
+      }
+    }
+
+    function parseTsv(tsvText) {
+      const lines = tsvText
+        .replace(/\r\n/g, "\n")
+        .replace(/\r/g, "\n")
+        .split("\n")
+        .filter((line) => line.trim() !== "");
+
+      if (lines.length <= 1) {
+        return [];
+      }
+
+      const headers = lines[0].split("\t").map((header) => header.trim());
+
+      return lines.slice(1).map((line) => {
+        const values = line.split("\t");
+
+        const article = {};
+        headers.forEach((header, index) => {
+          article[header] = values[index] ? values[index].trim() : "";
+        });
+
+        return article;
+      });
+    }
+
+    function renderDataSourceMessage() {
+      if (state.dataSource === "external") {
+        dataSourceMessage.textContent = "data.tsvを読み込んで表示しています。";
+        return;
+      }
+
+      dataSourceMessage.textContent = "ローカル確認用の内蔵サンプルデータを表示しています。GitHub Pagesなどではdata.tsvを読み込みます。";
+    }
+
+    function applySearch() {
+      const selectedDateOrder = getSelectedValue("dateOrder") || "old";
+      const limit = Number(getSelectedValue("limit") || 5);
+
+      let results = [...state.articles];
+
+      if (state.pendingTagFilter) {
+        results = results.filter((article) => article["タグ"] === state.pendingTagFilter);
+      }
+
+      if (state.statusFilter) {
+        results = results.filter((article) => article["ステータス"] === state.statusFilter);
+      }
+
+      if (state.favoriteFilter) {
+        results = results.filter((article) => article["ステータス2"] === state.favoriteFilter);
+      }
+
+      const canShowFavoriteNormally =
+        state.favoriteFilter === "お気に入り" ||
+        (state.pendingTagFilter === "謎解き" && state.statusFilter === "公開");
+
+      if (!canShowFavoriteNormally) {
+        results = results.filter((article) => article["ステータス2"] !== "お気に入り");
+      }
+
+      results.sort((a, b) => {
+        const dateA = new Date(a["日付"]);
+        const dateB = new Date(b["日付"]);
+
+        if (selectedDateOrder === "new") {
+          return dateB - dateA;
+        }
+
+        return dateA - dateB;
+      });
+
+      state.filteredArticles = results;
+
+      syncFavoriteFilterButtons();
+      renderActiveFilters();
+      renderArticles(results.slice(0, limit), results.length, limit);
+    }
+
+    function getSelectedValue(name) {
+      const checked = document.querySelector(`input[name="${name}"]:checked`);
+      return checked ? checked.value : "";
+    }
+
+    function syncFavoriteFilterButtons() {
+      if (state.favoriteFilter === "お気に入り") {
+        introFavoriteButton.classList.add("is-active");
+      } else {
+        introFavoriteButton.classList.remove("is-active");
+      }
+    }
+
+    function renderActiveFilters() {
+      activeFilters.innerHTML = "";
+
+      if (state.favoriteFilter === "お気に入り") {
+        const chip = document.createElement("span");
+        chip.className = "active-filter-chip";
+        chip.textContent = "お気に入り";
+
+        const removeButton = document.createElement("button");
+        removeButton.type = "button";
+        removeButton.className = "active-filter-remove";
+        removeButton.textContent = "×";
+        removeButton.addEventListener("click", () => {
+          state.favoriteFilter = "";
+          applySearch();
+        });
+
+        chip.appendChild(removeButton);
+        activeFilters.appendChild(chip);
+      }
+    }
+
+    function activateFavoriteFilter() {
+      if (state.favoriteFilter === "お気に入り") {
+        state.favoriteFilter = "";
+      } else {
+        state.favoriteFilter = "お気に入り";
+        state.statusFilter = "";
+        state.pendingTagFilter = "";
+
+        publicMetaButton.classList.remove("is-active");
+        nazoMetaButton.classList.remove("is-active");
+
+        document.querySelectorAll('input[name="tag"]').forEach((radio) => {
+          radio.checked = false;
+          radio.dataset.wasChecked = "false";
+        });
+      }
+
+      applySearch();
+    }
+
+    function renderArticles(articles, totalCount, limit) {
+      articleList.innerHTML = "";
+
+      resultCount.textContent = `${totalCount}件中 ${Math.min(totalCount, limit)}件を表示`;
+
+      if (articles.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "条件に合う記事は見つかりませんでした。";
+        articleList.appendChild(empty);
+        return;
+      }
+
+      articles.forEach((article) => {
+        const item = document.createElement("article");
+        const isFavorite = article["ステータス2"] === "お気に入り";
+        item.className = isFavorite ? "article is-favorite" : "article";
+
+        const title = document.createElement("h3");
+        title.className = "article-title";
+        title.textContent = article["記事タイトル"];
+
+        const meta = document.createElement("div");
+        meta.className = "article-meta";
+
+        const date = document.createElement("span");
+        date.textContent = article["日付"];
+
+        const tag = document.createElement("span");
+        tag.className = "tag";
+        tag.textContent = article["タグ"];
+
+        meta.appendChild(date);
+        meta.appendChild(tag);
+
+        if (isFavorite) {
+          const favoriteBadge = document.createElement("button");
+          favoriteBadge.type = "button";
+          favoriteBadge.className = state.favoriteFilter === "お気に入り" ? "favorite-badge is-active" : "favorite-badge";
+          favoriteBadge.textContent = "お気に入り";
+          favoriteBadge.addEventListener("click", activateFavoriteFilter);
+
+          meta.appendChild(favoriteBadge);
+        }
+
+        const main = document.createElement("div");
+        main.className = "article-main";
+
+        const body = document.createElement("p");
+        body.className = "article-body";
+        body.textContent = makeExcerpt(article["本文"], 20);
+
+        main.appendChild(body);
+
+        item.appendChild(title);
+        item.appendChild(meta);
+        item.appendChild(main);
+
+        articleList.appendChild(item);
+      });
+    }
+
+    function makeExcerpt(text, maxLength) {
+      if (!text) return "";
+
+      const normalized = text.trim();
+
+      if (normalized.length <= maxLength) {
+        return normalized;
+      }
+
+      return normalized.slice(0, maxLength) + "…";
+    }
+  </script>
+</body>
+</html>
