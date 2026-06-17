@@ -581,6 +581,93 @@
       line-height: 1.8;
     }
 
+
+    .clear-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(47, 41, 48, 0.42);
+      backdrop-filter: blur(4px);
+    }
+
+    .clear-overlay.is-hidden {
+      display: none;
+    }
+
+    .clear-modal {
+      position: relative;
+      width: min(460px, 100%);
+      padding: 36px 30px 30px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at top left, rgba(199, 111, 147, 0.18), transparent 38%),
+        #fff;
+      box-shadow: 0 22px 60px rgba(47, 41, 48, 0.24);
+      text-align: center;
+    }
+
+    .clear-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      padding: 0;
+      border-radius: 999px;
+      background: #f0e8ec;
+      color: var(--main-dark);
+      font-size: 20px;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .clear-title {
+      margin: 0 0 10px;
+      color: var(--main-dark);
+      font-size: clamp(32px, 8vw, 48px);
+      line-height: 1.1;
+      letter-spacing: 0.05em;
+    }
+
+    .clear-subtitle {
+      margin: 0 0 22px;
+      color: var(--text);
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1.5;
+    }
+
+    .post-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 140px;
+      padding: 13px 18px;
+      border-radius: 14px;
+      background: var(--main);
+      color: #fff;
+      font-weight: 900;
+      text-decoration: none;
+      transition: transform 0.12s ease, opacity 0.12s ease;
+    }
+
+    .post-button:hover {
+      transform: translateY(-1px);
+    }
+
+    .post-button:active {
+      transform: translateY(0);
+      opacity: 0.86;
+    }
+
     footer {
       margin-top: 24px;
       text-align: center;
@@ -673,6 +760,15 @@
     </section>
   </div>
 
+  <div class="clear-overlay is-hidden" id="clearOverlay">
+    <section class="clear-modal" role="dialog" aria-modal="true" aria-labelledby="clearTitle">
+      <button type="button" class="clear-close" id="clearCloseButton" aria-label="閉じる">×</button>
+      <h2 class="clear-title" id="clearTitle">CLEAR！</h2>
+      <p class="clear-subtitle">片翼【mmの謎解き#9】</p>
+      <a class="post-button" id="postButton" href="#" target="_blank" rel="noopener noreferrer">POST</a>
+    </section>
+  </div>
+
   <main class="page">
     <header>
       <div class="title-area">
@@ -700,7 +796,7 @@
       <form class="answer-form" id="answerForm">
         <div class="field">
           <label class="field-label" for="answerInput">解答</label>
-          <input class="answer-input" id="answerInput" type="text" autocomplete="off" placeholder="解答を入力" />
+          <input class="answer-input" id="answerInput" type="text" autocomplete="off" placeholder="解答をひらがなで入力" />
         </div>
         <button class="answer-button" type="submit">送信</button>
       </form>
@@ -792,6 +888,10 @@
 
   <script>
     const DATA_URL = "./data.tsv";
+    const CORRECT_ANSWER = "めいりょう";
+    const POST_TEXT = `片翼をクリアしました！
+#mmの謎解き #片翼_mm謎
+https://mm-rooftop99.github.io/mmnazo09_katayoku/`;
 
     const state = {
       articles: [],
@@ -814,6 +914,9 @@
     const answerForm = document.getElementById("answerForm");
     const answerInput = document.getElementById("answerInput");
     const answerMessage = document.getElementById("answerMessage");
+    const clearOverlay = document.getElementById("clearOverlay");
+    const clearCloseButton = document.getElementById("clearCloseButton");
+    const postButton = document.getElementById("postButton");
 
     document.addEventListener("DOMContentLoaded", init);
 
@@ -875,11 +978,34 @@
     function setupAnswerForm() {
       if (!answerForm) return;
 
+      postButton.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(POST_TEXT)}`;
+
+      clearCloseButton.addEventListener("click", () => {
+        clearOverlay.classList.add("is-hidden");
+      });
+
       answerForm.addEventListener("submit", (event) => {
         event.preventDefault();
-        answerMessage.textContent = "解答を受け付けました。";
-        answerInput.blur();
+
+        const answer = normalizeAnswer(answerInput.value);
+
+        if (answer === CORRECT_ANSWER) {
+          answerMessage.textContent = "";
+          answerInput.blur();
+          clearOverlay.classList.remove("is-hidden");
+          return;
+        }
+
+        answerMessage.textContent = "不正解です。";
       });
+    }
+
+    function normalizeAnswer(value) {
+      return value
+        .trim()
+        .replace(/[ァ-ン]/g, (char) => String.fromCharCode(char.charCodeAt(0) - 0x60))
+        .replace(/[ぁ-ん]/g, (char) => char)
+        .replace(/\s+/g, "");
     }
 
     function setupIntroModal() {
